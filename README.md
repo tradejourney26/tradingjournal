@@ -1,0 +1,2 @@
+# tradingjournal
+Trading Journal
