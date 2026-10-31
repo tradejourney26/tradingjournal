@@ -547,6 +547,51 @@ svg.ich:focus-visible{box-shadow:0 0 0 3px var(--ring)}
 
 body{overflow-x:clip}
 html{overflow-x:clip}
+
+/* ---- calendar heat map ---- */
+.csm{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 12px}
+.csm>div{background:var(--s2);border-radius:12px;padding:8px 10px;min-width:0}
+.csm .l{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);font-weight:600}
+.csm b{display:block;font-size:15px;margin-top:2px;overflow-wrap:anywhere}.csm small{font-size:11px}
+@media(max-width:600px){.csm{grid-template-columns:repeat(2,1fr)}}
+.day.hm.w{background:linear-gradient(rgba(var(--gnr),var(--ha)),rgba(var(--gnr),var(--ha))),var(--s1);box-shadow:var(--raise-s),inset 0 0 0 1px rgba(var(--gnr),.4)}
+.day.hm.l{background:linear-gradient(rgba(var(--rdr),var(--ha)),rgba(var(--rdr),var(--ha))),var(--s1);box-shadow:var(--raise-s),inset 0 0 0 1px rgba(var(--rdr),.4)}
+.day.hm:hover{background:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),var(--s1)}
+.day.hm.w:hover{background:linear-gradient(rgba(var(--gnr),var(--ha)),rgba(var(--gnr),var(--ha))),var(--s1);filter:brightness(1.06)}
+.day.hm.l:hover{background:linear-gradient(rgba(var(--rdr),var(--ha)),rgba(var(--rdr),var(--ha))),var(--s1);filter:brightness(1.06)}
+.day.hm .num{color:var(--ink);font-weight:650}
+.day.be{box-shadow:var(--raise-s),inset 0 0 0 1px var(--line)}
+.day.td{outline:2px solid var(--acc);outline-offset:-2px}
+.cal .day{animation:hm-in .5s cubic-bezier(.22,.8,.24,1) backwards;animation-delay:calc(var(--di,0)*16ms + 150ms)}
+@keyframes hm-in{from{opacity:0;transform:scale(.84)}to{opacity:1;transform:none}}
+.cal-lg{display:flex;align-items:center;gap:8px;justify-content:center;margin:12px 0 2px;font-size:11px;color:var(--mut)}
+.cal-lg i{width:150px;max-width:40%;height:8px;border-radius:99px;background:linear-gradient(90deg,rgba(var(--rdr),.58),rgba(var(--rdr),.14),var(--s2) 50%,rgba(var(--gnr),.14),rgba(var(--gnr),.58));box-shadow:inset 0 0 0 .5px var(--line)}
+/* ================= Motion layer: tab pill, page / card / text transitions ================= */
+[id=main].mo-out,.mo-out{opacity:0;filter:blur(10px);transform:translateY(6px) scale(.985);transition:opacity .16s ease-in,filter .16s ease-in,transform .16s ease-in;pointer-events:none}
+[id=main].mo-in,.mo-in{animation:mo-main .45s cubic-bezier(.2,.7,.2,1) backwards}
+@keyframes mo-main{from{opacity:0;filter:blur(12px)}to{opacity:1;filter:blur(0)}}
+.mo-wait{opacity:0}
+.mo-c{animation:mo-card .6s cubic-bezier(.22,.8,.24,1) backwards;animation-delay:calc(var(--mi,0)*52ms + 50ms)}
+@keyframes mo-card{from{opacity:0;transform:translateY(20px) scale(.965);filter:blur(8px)}to{opacity:1;transform:none;filter:blur(0)}}
+.mo-c.mo-lite{animation-name:mo-card-lite;animation-duration:.4s}
+@keyframes mo-card-lite{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.mo-h{animation:mo-text .65s cubic-bezier(.22,.8,.24,1) backwards;animation-delay:calc(var(--mi,0)*52ms + 190ms)}
+@keyframes mo-text{from{opacity:0;transform:translateY(9px);filter:blur(6px)}to{opacity:1;transform:none;filter:blur(0)}}
+.mo-ch{display:inline-block;animation:mo-char .55s cubic-bezier(.22,.8,.24,1) backwards;animation-delay:calc(var(--ci,0)*30ms)}
+@keyframes mo-char{from{opacity:0;transform:translateY(.5em);filter:blur(6px)}to{opacity:1;transform:none;filter:blur(0)}}
+.mo-fade{animation:mo-text .7s cubic-bezier(.22,.8,.24,1) .3s backwards}
+#rnav{position:relative}
+.mo-pill{position:absolute;z-index:0;pointer-events:none;border-radius:14px;background:rgba(255,255,255,.78);box-shadow:0 0 0 .5px rgba(0,0,0,.06),inset 0 1px 0 #fff,0 4px 12px -4px rgba(0,60,160,.22)}
+#tabs .mo-pill{background:rgba(255,255,255,.74);box-shadow:inset 0 1px 0 #fff,0 4px 12px -4px rgba(0,60,160,.25)}
+:root[data-theme=dark] .mo-pill{background:rgba(255,255,255,.15);box-shadow:0 0 0 .5px rgba(255,255,255,.12),inset 0 1px 0 rgba(255,255,255,.22),0 4px 14px -4px rgba(0,0,0,.6)}
+:root[data-theme=dark] #tabs .mo-pill{background:rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
+#rnav>.it,#tabs>.tb{position:relative;z-index:1}
+#rnav .it[aria-current=page],#tabs .tb[aria-current=page]{background:transparent;box-shadow:none}
+.tb{transition:color .25s}
+.tb svg{transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.tb[aria-current=page] svg{transform:translateY(-1px) scale(1.12)}
+@media print{.mo-wait{opacity:1!important}}
+@media(prefers-reduced-motion:reduce){.mo-wait{opacity:1!important}}
 </style></head>
 <body>
 <div class="app">
@@ -953,12 +998,22 @@ function weekly(m){const all=base(),ws=monday(addDays(today(),D.ui.wk*7)),we=add
   h('label',{style:'margin-top:10px'},'One improvement target for next week',ta)))}
 
 /* ================= Calendar & daily review ================= */
-V.calendar=m=>{const all=base(),[y,mo]=D.ui.cal.split('-').map(Number),first=`${y}-${String(mo).padStart(2,'0')}-01`,dim=new Date(y,mo,0).getDate(),s=settings();
+V.calendar=m=>{const all=base(),[y,mo]=D.ui.cal.split('-').map(Number),first=`${y}-${String(mo).padStart(2,'0')}-01`,dim=new Date(y,mo,0).getDate(),td=today();
  const mv=n=>{const d=new Date(Date.UTC(y,mo-1+n,1));D.ui.cal=d.toISOString().slice(0,7);save();render()};
+ const days=[];for(let i=1;i<=dim;i++){const ds=first.slice(0,8)+String(i).padStart(2,'0');days.push([i,ds,dayStats(all,ds)])}
+ /* heat map: colour strength = day's |net| relative to the month's biggest win / loss (square-root scale so small days stay visible) */
+ const traded=days.filter(d=>d[2].cl.length),nz=d=>d[2].net||0,mx=Math.max(1,...traded.map(d=>Math.abs(nz(d))));
+ const wins=traded.filter(d=>nz(d)>0),loss=traded.filter(d=>nz(d)<0),tot=traded.reduce((a,d)=>a+nz(d),0);
+ const best=wins.length?wins.reduce((a,b)=>nz(b)>nz(a)?b:a):null,worst=loss.length?loss.reduce((a,b)=>nz(b)<nz(a)?b:a):null;
+ const dl=d=>d?d[0]+' '+new Date(y,mo-1).toLocaleString('en-IN',{month:'short'}):'—';
+ const tile=(l,v,cls,sub)=>h('div',{},h('span',{class:'l'},l),h('b',{class:'num '+(cls||'')},v),sub?h('small',{class:'mut'},sub):'');
  const g=h('div',{class:'cal'},WD.map(w=>h('div',{class:'h'},w)),Array.from({length:dow(first)},()=>h('div')));
- for(let i=1;i<=dim;i++){const ds=first.slice(0,8)+String(i).padStart(2,'0'),st=dayStats(all,ds),brk=st.st==='bad';
-  g.append(h('button',{class:'day '+(st.cl.length?(st.net>0?'w':st.net<0?'l':''):''),onclick:()=>dayDlg(ds),'aria-label':`${ds}: ${st.n} trades, net ${inr(st.net)}`},h('b',{},i),st.n?h('div',{class:'num '+tone(st.net)},sg(st.net)+cmp(st.net)):'',st.n?h('div',{class:'mut'},st.n+'t'+(st.score!=null?' · '+st.score:'')):'',brk&&st.n?h('div',{class:'dn'},'⚠ limit'):''))}
- m.append(h('h1',{},'Calendar'),h('div',{class:'card'},h('div',{class:'row',style:'align-items:center;margin-bottom:10px'},h('button',{class:'chip',onclick:()=>mv(-1)},'Previous'),h('h2',{style:'margin:0;flex:1;text-align:center'},new Date(y,mo-1).toLocaleString('en-IN',{month:'long',year:'numeric'})),h('button',{class:'chip',onclick:()=>mv(1)},'Next')),g,h('p',{class:'mut'},'Each day: net P&L, trade count (t), discipline score. Blue-tinted = winning day, red-tinted = losing day.')))};
+ days.forEach(([i,ds,st])=>{const brk=st.st==='bad',has=st.cl.length,net=st.net||0,heat=has&&net!==0,k=heat?Math.sqrt(Math.abs(net)/mx):0;
+  g.append(h('button',{class:'day'+(heat?' hm '+(net>0?'w':'l'):'')+(has&&!heat?' be':'')+(ds===td?' td':''),style:'--di:'+i+(heat?';--ha:'+(.14+.44*k).toFixed(3):''),onclick:()=>dayDlg(ds),title:st.n?`${ds}: ${sg(net)}${inr(net)}`:ds,'aria-label':`${ds}: ${st.n} trades, net ${inr(st.net)}`},h('b',{},i),st.n?h('div',{class:'num '+tone(st.net)},sg(st.net)+cmp(st.net)):'',st.n?h('div',{class:'mut'},st.n+'t'+(st.score!=null?' · '+st.score:'')):'',brk&&st.n?h('div',{class:'dn'},'⚠ limit'):''))});
+ m.append(h('h1',{},'Calendar'),h('div',{class:'card'},h('div',{class:'row',style:'align-items:center;margin-bottom:10px'},h('button',{class:'chip',onclick:()=>mv(-1)},'Previous'),h('h2',{style:'margin:0;flex:1;text-align:center'},new Date(y,mo-1).toLocaleString('en-IN',{month:'long',year:'numeric'})),h('button',{class:'chip',onclick:()=>mv(1)},'Next')),
+  traded.length?h('div',{class:'csm'},tile('Month net',sg(tot)+cmp(tot),tone(tot),traded.length+' trading days'),tile('Green / red days',wins.length+' / '+loss.length,'',traded.length-wins.length-loss.length?(traded.length-wins.length-loss.length)+' breakeven':''),tile('Best day',best?sg(nz(best))+cmp(nz(best)):'—','up',dl(best)),tile('Worst day',worst?sg(nz(worst))+cmp(nz(worst)):'—','dn',dl(worst))):'',
+  g,h('div',{class:'cal-lg','aria-hidden':'true'},h('span',{},'Bigger loss'),h('i',{}),h('span',{},'Bigger profit')),
+  h('p',{class:'mut'},'Each day: net P&L, trade count (t), discipline score. Colour shows how big the day was compared with this month’s best and worst: deeper green = bigger profit, deeper red = bigger loss. Today has a blue outline.')))};
 const RQ=[['plan','What was my plan?'],['follow','Did I follow my plan?'],['best','Which trade was executed best?'],['worst','Which trade was executed worst?'],['mistake','What was my biggest mistake?'],['risk','Did I respect my risk limits?'],['learn','What did I learn?'],['change','What will I change tomorrow?']];
 function dayDlg(date){const all=base(),st=dayStats(all,date),key='d'+date,r=D.reviews[key]||{};
  const fields=RQ.map(([k,q])=>h('label',{style:'flex-basis:100%'},q,h('textarea',{oninput:e=>{D.reviews[key]={...(D.reviews[key]||{}),[k]:e.target.value};save()}},r[k]||'')));
@@ -1818,6 +1873,147 @@ function learnDetail(m,s){
   calcCard(s),myCard(s),
   h('section',{class:'card c12'},h('div',{class:'row'},h('button',{class:'btn p',onclick:()=>openTrade({date:today(),status:'Planned',dir:s.dir,style:'Intraday',itype:'Equity',chMode:'auto',lib:s.id,strategy:s.name,setup:s.pre.setup,trend:s.pre.trend,trigger:s.pre.trigger,invalid:s.pre.invalid,checked:[],_new:1})},'Log a trade with this setup'),h('button',{class:'btn g',onclick:()=>toPlaybook(s)},'Add to my Playbook'))))}
 const sortSel=()=>{const o=[['date',1,'Newest first'],['date',0,'Oldest first'],['net',1,'Net P&L: high to low'],['net',0,'Net P&L: low to high'],['R',1,'R: high to low'],['score',1,'Score: high to low'],['symbol',0,'Symbol A–Z']],e=h('select',{onchange:()=>{const[k,d]=e.value.split('|');F.sort=k;F.desc=d==='1';V.journal.tbl&&V.journal.tbl()}},o.map(([k,d,t])=>h('option',{value:k+'|'+d,selected:F.sort===k&&F.desc===!!d},t)));return h('label',{},'Sort',e)};
+
+/* ================= Motion layer: sliding tab pill, page blur transition, staggered cards, text reveals =================
+   Purely additive: wraps nav / gotoView / render, never changes what a view draws. Disabled by prefers-reduced-motion. */
+(()=>{
+ const RM=matchMedia('(prefers-reduced-motion: reduce)');
+ const MO={sig:null,tok:0,fromGo:false,skipNav:false,softUntil:0,prev:{},pill:{},io:null,t:0};
+ const mainEl=()=>document.getElementById('main'),sigNow=()=>D.ui.view+'|'+(D.ui.learn||'');
+
+ /* sliding pill behind the active tab: leading edge races ahead, trailing edge catches up */
+ function placePills(animate){
+  for(const id of ['rnav','tabs']){
+   const box=document.getElementById(id);if(!box)continue;
+   let p=MO.pill[id];if(!p){p=MO.pill[id]=document.createElement('i');p.className='mo-pill';p.setAttribute('aria-hidden','true')}
+   if(box.firstChild!==p)box.prepend(p);
+   const cur=box.querySelector('[aria-current=page]');
+   if(!cur||!cur.offsetWidth){p.style.display='none';delete MO.prev[id];continue}
+   const r={l:cur.offsetLeft,t:cur.offsetTop,w:cur.offsetWidth,h:cur.offsetHeight},o=MO.prev[id];
+   p.style.cssText='display:block;left:'+r.l+'px;top:'+r.t+'px;width:'+r.w+'px;height:'+r.h+'px;border-radius:'+getComputedStyle(cur).borderRadius;
+   if(animate&&o&&!RM.matches&&(o.l!==r.l||o.t!==r.t||o.w!==r.w||o.h!==r.h)){
+    const L=Math.min(o.l,r.l),T=Math.min(o.t,r.t),R=Math.max(o.l+o.w,r.l+r.w),B=Math.max(o.t+o.h,r.t+r.h);
+    const f=(l,t,w,h,e)=>({left:l+'px',top:t+'px',width:w+'px',height:h+'px',easing:e||'linear'});
+    p.getAnimations().forEach(a=>a.cancel());
+    p.animate([f(o.l,o.t,o.w,o.h,'cubic-bezier(.2,.9,.3,1)'),{...f(L,T,R-L,B-T,'cubic-bezier(.45,0,.2,1)'),offset:.4},f(r.l,r.t,r.w,r.h)],{duration:480});
+   }
+   MO.prev[id]=r;
+  }
+ }
+ const _nav=nav;
+ nav=function(){if(MO.skipNav)return;const r=_nav.apply(this,arguments);try{placePills(true)}catch(e){}return r};
+ addEventListener('resize',()=>{try{placePills(false)}catch(e){}});
+ const rail=document.getElementById('rail');rail&&rail.addEventListener('transitionend',e=>{if(e.propertyName==='width'){try{placePills(false)}catch(x){}}});
+
+ /* count-up for headline numbers (final frame restores the original text exactly) */
+ function countUp(el,delay){
+  let tn=null;const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);while(w.nextNode()){if(/\d/.test(w.currentNode.nodeValue)){tn=w.currentNode;break}}
+  if(!tn)return;const txt=tn.nodeValue,m=txt.match(/\d[\d,]*(?:\.\d+)?/);if(!m||/\d[:\/]\d|\d-\d/.test(txt))return;
+  const raw=m[0],target=parseFloat(raw.replace(/,/g,''));if(!isFinite(target)||target===0||raw.length>13)return;
+  const dec=(raw.split('.')[1]||'').length,comma=raw.includes(','),pre=txt.slice(0,m.index),post=txt.slice(m.index+raw.length);
+  const fmt=v=>{let s=v.toFixed(dec);if(comma){const a=s.split('.');s=Number(a[0]).toLocaleString('en-IN')+(a[1]!==undefined?'.'+a[1]:'')}return pre+s+post};
+  el.style.fontVariantNumeric='tabular-nums';tn.nodeValue=fmt(0);
+  const D0=780;let t0=0;
+  const step=now=>{if(!tn.isConnected)return;if(!t0)t0=now;const k=Math.min(1,(now-t0)/D0),e=1-Math.pow(1-k,4);
+   if(k<1){tn.nodeValue=fmt(target*e);requestAnimationFrame(step)}else{tn.nodeValue=txt;el.style.fontVariantNumeric=''}};
+  setTimeout(()=>requestAnimationFrame(step),delay);
+ }
+
+ /* staggered card entrance (cards below the fold reveal as they scroll into view) */
+ function play(c,i){
+  c.style.setProperty('--mi',Math.min(i,10));c.classList.remove('mo-wait');c.classList.add('mo-c');if(i>7)c.classList.add('mo-lite');
+  const hd=c.querySelector('h2,h3');if(hd){hd.style.setProperty('--mi',Math.min(i,10));hd.classList.add('mo-h')}
+  c.querySelectorAll('.kpi .v,.hero .big').forEach(n=>countUp(n,Math.min(i,10)*52+160));
+  const done=e=>{if(e.target!==c)return;c.removeEventListener('animationend',done);c.classList.remove('mo-c','mo-lite');c.style.removeProperty('--mi');if(hd){hd.classList.remove('mo-h');hd.style.removeProperty('--mi')}};
+  c.addEventListener('animationend',done);
+ }
+ const io=()=>MO.io||(MO.io=new IntersectionObserver(es=>{let k=0;es.forEach(e=>{if(e.isIntersecting){MO.io.unobserve(e.target);play(e.target,k++)}})},{rootMargin:'0px 0px 40px 0px',threshold:0}));
+ function collect(roots){
+  const out=new Set();
+  roots.forEach(n=>{if(n.nodeType!==1)return;
+   if(n.matches('.card')){if(!n.parentElement||!n.parentElement.closest('.card'))out.add(n)}
+   else n.querySelectorAll('.card').forEach(c=>{if(!c.parentElement.closest('.card'))out.add(c)})});
+  return [...out];
+ }
+ function reveal(cards){
+  const vh=innerHeight;let i=0;
+  cards.forEach(c=>{
+   if(c.classList.contains('mo-c')||c.classList.contains('mo-wait')||!c.getClientRects().length||getComputedStyle(c).animationName!=='none')return;
+   if(c.getBoundingClientRect().top>vh*1.02&&window.IntersectionObserver){c.classList.add('mo-wait');io().observe(c)}else play(c,i++);
+  });
+ }
+
+ /* letter-by-letter title reveal */
+ function title(){
+  const t=document.getElementById('ttl'),s=document.getElementById('sub');
+  if(t){const txt=t.textContent;if(txt&&txt.length<=34){t.setAttribute('aria-label',txt);t.textContent='';
+   [...txt].forEach((ch,i)=>{const x=document.createElement('span');x.className='mo-ch';x.setAttribute('aria-hidden','true');x.style.setProperty('--ci',i);if(ch===' ')x.style.whiteSpace='pre';x.textContent=ch;t.appendChild(x)})}}
+  if(s){s.classList.remove('mo-fade');void s.offsetWidth;s.classList.add('mo-fade')}
+ }
+
+ function enter(){
+  const m=mainEl();if(!m)return;
+  m.classList.remove('mo-out','mo-in');void m.offsetWidth;m.classList.add('mo-in');
+  clearTimeout(MO.t);MO.t=setTimeout(()=>m.classList.remove('mo-in'),560);
+  if(MO.io){MO.io.disconnect()}
+  reveal(collect([m]));title();
+ }
+
+ /* wrap render: a new view (or a lesson opened / closed) gets the full entrance */
+ const _render=render;
+ render=function(){
+  const m=mainEl(),kind=MO.fromGo||sigNow()!==MO.sig;MO.fromGo=false;
+  const t=document.getElementById('ttl');t&&t.removeAttribute('aria-label');
+  try{return _render.apply(this,arguments)}
+  finally{
+   MO.sig=sigNow();m&&m.classList.remove('mo-out');
+   if(kind&&!RM.matches){try{enter()}catch(e){document.querySelectorAll('.mo-wait').forEach(n=>n.classList.remove('mo-wait'))}}
+   try{placePills(false)}catch(e){}
+  }
+ };
+
+ /* wrap gotoView: pill slides + page blurs out first, then the new view resolves in */
+ const _go=gotoView;
+ gotoView=function(k){
+  const m=mainEl();
+  if(RM.matches||!m||k===D.ui.view){MO.fromGo=true;return _go(k)}
+  const tok=++MO.tok;
+  D.ui.view=k;D.ui.learn=null;nav();m.classList.add('mo-out');
+  setTimeout(()=>{if(tok!==MO.tok)return;MO.fromGo=true;MO.skipNav=true;try{_go(k)}finally{MO.skipNav=false;m.classList.remove('mo-out')}},150);
+ };
+
+ /* in-view tab / chip switches (e.g. Learn groups): animate whatever cards get swapped in */
+ /* in-page tabs (Learn groups, Markets sections…): same blur-out → swap → blur-in as the main tabs.
+    The click is held for ~150ms while the content below the tab row blurs out, then replayed. */
+ function regionOf(row){let n=row;const m=mainEl();while(n&&n!==m&&!n.nextElementSibling)n=n.parentElement;const out=[];if(n&&n!==m)for(let e=n.nextElementSibling;e;e=e.nextElementSibling)out.push(e);return out}
+ addEventListener('click',e=>{
+  const chip=e.target.closest&&e.target.closest('.chips button,.seg button,[role=tab]');
+  if(!chip||MO.replay)return;
+  const m=mainEl(),row=chip.closest('.chips,.seg');
+  const tabby=!RM.matches&&m&&row&&m.contains(chip)&&!chip.closest('dialog')&&(D.ui.view==='finance'||D.ui.view==='learn')&&chip.getAttribute('aria-pressed')==='false';
+  const region=tabby?regionOf(row):[];
+  if(!region.length){MO.softUntil=performance.now()+300;return}
+  e.preventDefault();e.stopImmediatePropagation();
+  if(MO.chipBusy)return;MO.chipBusy=true;
+  const rows=()=>[...m.querySelectorAll('.chips,.seg')],idx=rows().indexOf(row);
+  region.forEach(n=>n.classList.add('mo-out'));
+  setTimeout(()=>{
+   try{MO.replay=true;chip.click()}finally{MO.replay=false}
+   region.forEach(n=>n.classList.remove('mo-out'));
+   try{const nr=rows()[idx],nreg=nr?regionOf(nr):[];
+    nreg.forEach(n=>{n.classList.remove('mo-in');void n.offsetWidth;n.classList.add('mo-in')});
+    setTimeout(()=>nreg.forEach(n=>n.classList.remove('mo-in')),560);
+    reveal(collect(nreg))}catch(x){}
+   MO.chipBusy=false;
+  },150);
+ },true);
+ const mo=new MutationObserver(recs=>{
+  if(RM.matches||performance.now()>MO.softUntil)return;
+  const nodes=[];recs.forEach(r=>r.addedNodes.forEach(n=>nodes.push(n)));
+  try{reveal(collect(nodes))}catch(e){}
+ });
+ const mm=mainEl();mm&&mo.observe(mm,{childList:true,subtree:true});
+})();
 
 /* ================= Boot ================= */
 (async()=>{theme();await fromHash();if(!SESS)SESS=sessLoad();addEventListener('online',()=>{if(SESS)sync(false)});addEventListener('beforeunload',e=>{if(SESS&&D.sync&&D.sync.dirty){e.preventDefault();e.returnValue=''}});document.addEventListener('visibilitychange',()=>{if(SESS&&D.sync&&(document.visibilityState==='visible'||D.sync.dirty))sync(false)});if(!SESS)return authScreen();await start();if(window._rec)pwDlg()})();
